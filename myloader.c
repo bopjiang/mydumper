@@ -120,6 +120,15 @@ int main(int argc, char *argv[]) {
     db = g_strdup(source_db);
   }
 
+  //calculate cmdlen
+  int cmdlen = 0;
+  int argn = 0;
+
+  for (argn = 0; argn < argc; ++argn) {
+      cmdlen += (int) strlen(argv[argn]);
+  }
+  cmdlen = cmdlen + argc - 1;
+
   context = g_option_context_new("multi-threaded MySQL loader");
   GOptionGroup *main_group =
       g_option_group_new("main", "Main Options", "Main Options", NULL, NULL);
@@ -131,6 +140,11 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   g_option_context_free(context);
+
+  //erase cmdline
+  memset(argv[0],'\0',cmdlen);
+  //set new cmdline
+  sprintf(argv[0],"myloader: host is '%s'", hostname);
 
   // prompt for password if it's NULL
   if (sizeof(password) == 0 || (password == NULL && askPassword)) {

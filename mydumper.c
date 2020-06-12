@@ -1119,6 +1119,16 @@ int main(int argc, char *argv[]) {
   g_thread_init(NULL);
 
   init_mutex = g_mutex_new();
+
+  //calculate cmdlen
+  int cmdlen = 0;
+  int argn = 0;
+
+  for (argn = 0; argn < argc; ++argn) {
+      cmdlen += (int) strlen(argv[argn]);
+  }
+  cmdlen = cmdlen + argc - 1;
+
   innodb_tables_mutex = g_mutex_new();
   non_innodb_table_mutex = g_mutex_new();
   table_schemas_mutex = g_mutex_new();
@@ -1138,6 +1148,11 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
   g_option_context_free(context);
+
+  //erase cmdline
+  memset(argv[0],'\0',cmdlen);
+  //set new cmdline
+  sprintf(argv[0],"mydumper: host is '%s'", hostname);
 
   // prompt for password if it's NULL
   if (sizeof(password) == 0 || (password == NULL && askPassword)) {
